@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set \
+  -o nounset \
+  -o pipefail \
+  -o errexit
+
+# detect the HashiCorp tool name
+readonly __dirname="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly toolname="kubecfg" #$(basename "$(dirname "${__dirname}")")"
+
+sort_versions () {
+  sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$/.z/; G; s/\n/ /' \
+      | LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n \
+      | awk '{print $2}' \
+      | tr '\n' ' '
+}
+
+list_all () {
+  curl -s "https://api.github.com/repos/ksonnet/${toolname}/tags" \
+      | grep -oE "name\": \"v[0-9].*\"," \
+      | sed 's/name\": \"v//;s/\",//' \
+      | sort_versions
+  echo "master"
+}
+
+list_all
