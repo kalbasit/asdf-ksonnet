@@ -3,11 +3,12 @@
 set \
   -o nounset \
   -o pipefail \
-  -o errexit
+  -o errexit \
+  -o xtrace
 
-# detect the HashiCorp tool name
+# detect the tool name
 readonly __dirname="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly toolname="kubecfg" #$(basename "$(dirname "${__dirname}")")"
+readonly toolname="$(basename "$(dirname "${__dirname}")")"
 
 sort_versions () {
   sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$/.z/; G; s/\n/ /' \
