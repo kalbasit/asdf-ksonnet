@@ -1,9 +1,8 @@
 language: c
 before_script:
+  - eval "$(gimme stable)"
   - git clone https://github.com/asdf-vm/asdf.git asdf
   - . asdf/asdf.sh
-  - asdf plugin-add golang
-  - asdf install
 script:
   - asdf plugin-add kubecfg ./
   - asdf list-all kubecfg
