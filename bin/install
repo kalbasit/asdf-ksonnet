@@ -60,6 +60,7 @@ install () {
     done
 
     if [[ -d "${source_path}/lib" ]]; then
+      echo "Installing ksonnet libraries into ${lib_install_path}"
       cp -r "${source_path}/lib" "${lib_install_path}"
     fi
   else
