@@ -24,6 +24,8 @@ install () {
   local -r install_path="$3"
 
   local -r bin_install_path="${install_path}/bin"
+  local -r lib_install_path="${install_path}/lib"
+
   local -r download_url="$(get_download_url "${version}")"
   local -r download_path="${TMP_DOWNLOAD_DIR}/$(get_filename "${version}")"
 
@@ -56,6 +58,10 @@ install () {
         cp "${f}" "${bin_install_path}"
       fi
     done
+
+    if [[ -d "${source_path}/lib" ]]; then
+      cp -r "${source_path}/lib" "${lib_install_path}"
+    fi
   else
     echo "Error: ${toolname} version ${version} not found" >&2
     exit 1
@@ -68,6 +74,7 @@ get_arch () {
 
 get_filename () {
   local -r version="$1"
+
   local -r arch="$(get_arch)"
   if [[ ${version} =~ ^[0-9] ]]; then
     echo "v${version}"
@@ -78,6 +85,7 @@ get_filename () {
 
 get_download_url () {
   local -r version="$1"
+
   local -r filename="$(get_filename "${version}")"
   echo "https://codeload.github.com/ksonnet/${toolname}/zip/${filename}"
 }
