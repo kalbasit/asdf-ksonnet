@@ -3,26 +3,31 @@
 set \
   -o nounset \
   -o pipefail \
-  -o errexit \
-  -o xtrace
+  -o errexit
 
 # detect the tool name
 readonly __dirname="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly toolname="$(basename "$(dirname "${__dirname}")")"
 
-sort_versions () {
-  sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$/.z/; G; s/\n/ /' \
-      | LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n \
-      | awk '{print $2}' \
+readonly SEMVER_REGEX='(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?'
+
+get_git_tags () {
+  local -r repo_url="$1"
+
+  local tag
+  for tag in $(git ls-remote --tags "${repo_url}"); do
+    if [[ ${tag} =~ refs/tags/v${SEMVER_REGEX}$ ]]; then
+      echo "${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.${BASH_REMATCH[3]}.${BASH_REMATCH[4]}.${BASH_REMATCH[5]}"
+    fi
+  done \
+      | LC_ALL=C sort -t '.' -k 1,1n -k 2,2n -k 3,3n -k 4,4d -k 5,5d \
+      | awk '{ FS="."; print $1 "." $2 "." $3 ($4 ? "+" $4 : "") ($5 ? "-" $5 : "") }' \
       | tr '\n' ' '
 }
 
 list_all () {
-  curl -s "https://api.github.com/repos/ksonnet/${toolname}/tags" \
-      | grep -oE "name\": \"v[0-9].*\"," \
-      | sed 's/name\": \"v//;s/\",//' \
-      | sort_versions
-  echo "master"
+  echo "$(get_git_tags "https://github.com/ksonnet/${toolname}") master" \
+      | tr -s ' '
 }
 
 list_all
