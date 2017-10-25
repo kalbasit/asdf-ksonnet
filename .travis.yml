@@ -1,6 +1,6 @@
 language: c
 before_script:
-  - eval "$(gimme stable)"
+  - eval "$(gimme 1.8)"
   - git clone https://github.com/asdf-vm/asdf.git asdf
   - . asdf/asdf.sh
 script:
