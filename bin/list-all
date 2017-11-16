@@ -17,11 +17,11 @@ get_git_tags () {
   local tag
   for tag in $(git ls-remote --tags "${repo_url}"); do
     if [[ ${tag} =~ refs/tags/v${SEMVER_REGEX}$ ]]; then
-      echo "${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.${BASH_REMATCH[3]}.${BASH_REMATCH[4]}.${BASH_REMATCH[5]}"
+      echo "${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.${BASH_REMATCH[3]}.${BASH_REMATCH[4]#-}.${BASH_REMATCH[5]#+}"
     fi
   done \
       | LC_ALL=C sort -t '.' -k 1,1n -k 2,2n -k 3,3n -k 4,4d -k 5,5d \
-      | awk '{ FS="."; print $1 "." $2 "." $3 ($4 ? "+" $4 : "") ($5 ? "-" $5 : "") }' \
+      | awk '{ FS="."; print $1 "." $2 "." $3 ($4 ? "-" $4 : "") ($5 ? "+" $5 : "") }' \
       | tr '\n' ' '
 }
 
