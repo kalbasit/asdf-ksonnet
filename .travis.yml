@@ -4,10 +4,10 @@ os:
   - osx
 before_script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; brew install gimme; fi
-  - eval "$(gimme stable)"
   - git clone https://github.com/asdf-vm/asdf.git asdf
   - . asdf/asdf.sh
 script:
+  - eval "$(gimme stable)"
   - asdf plugin-add ksonnet ./
   - asdf list-all ksonnet
   - asdf plugin-test ksonnet ./ 'ks version'
