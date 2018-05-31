@@ -38,9 +38,15 @@ install () {
     unzip -qq "${download_path}" -d "${source_base_path}"
     mv "${source_base_path}/${toolname}-${version}" "${source_path}"
 
+    if [[ -d "${source_path}/cmd/ks" ]]; then
+      local -r bin_path="${source_path}/cmd/ks"
+    else
+      local -r bin_path="${source_path}"
+    fi
+
     echo "Compiling version ${version} of ${toolname}"
     ( \
-      cd "${source_path}" \
+      cd "${bin_path}" \
       && export GOPATH="${TMP_DOWNLOAD_DIR}" \
       && go build -ldflags="-X main.version=${version}"
     )
@@ -52,7 +58,7 @@ install () {
     mkdir -p "${bin_install_path}"
 
     local f
-    for f in "${source_path}"/*; do
+    for f in "${bin_path}"/*; do
       if [[ -f "${f}" ]] \
       && [[ -x "${f}" ]]; then
         cp "${f}" "${bin_install_path}"
