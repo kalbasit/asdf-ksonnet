@@ -32,11 +32,12 @@ install () {
   if curl -fs "${download_url}" -o "${download_path}"; then
     local -r source_base_path="${TMP_DOWNLOAD_DIR}/src/github.com/ksonnet"
     local -r source_path="${source_base_path}/${toolname}"
+    local -r bindir=
 
     if [[ "$(echo $version | cut -d. -f2)" -ge 10 ]]; then
-      local -r bindir="${source_path}/cmd/ks"
+      bindir="${source_path}/cmd/ks"
     else
-      local -r bindir="${source_path}"
+      bindir="${source_path}"
     fi
 
     echo "Extracting ${toolname} archive"
