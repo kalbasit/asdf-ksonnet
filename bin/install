@@ -33,6 +33,12 @@ install () {
     local -r source_base_path="${TMP_DOWNLOAD_DIR}/src/github.com/ksonnet"
     local -r source_path="${source_base_path}/${toolname}"
 
+    if [[ "$(echo $version | cut -d. -f2)" -ge 10 ]]; then
+      local -r bindir="${source_path}/cmd/ks"
+    else
+      local -r bindir="${source_path}"
+    fi
+
     echo "Extracting ${toolname} archive"
     mkdir -p "${source_base_path}"
     unzip -qq "${download_path}" -d "${source_base_path}"
@@ -40,7 +46,7 @@ install () {
 
     echo "Compiling version ${version} of ${toolname}"
     ( \
-      cd "${source_path}" \
+      cd "${bindir}" \
       && export GOPATH="${TMP_DOWNLOAD_DIR}" \
       && go build -ldflags="-X main.version=${version}"
     )
@@ -52,7 +58,7 @@ install () {
     mkdir -p "${bin_install_path}"
 
     local f
-    for f in "${source_path}"/*; do
+    for f in "${bindir}"/*; do
       if [[ -f "${f}" ]] \
       && [[ -x "${f}" ]]; then
         cp "${f}" "${bin_install_path}"
